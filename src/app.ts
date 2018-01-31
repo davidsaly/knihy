@@ -12,6 +12,7 @@ import * as mongoose from "mongoose";
 import * as passport from "passport";
 import * as expressValidator from "express-validator";
 import * as bluebird from "bluebird";
+import { seedDatabase } from "./config/seed";
 
 const MongoStore = mongo(session);
 
@@ -23,6 +24,8 @@ import * as homeController from "./controllers/home";
 import * as userController from "./controllers/user";
 import * as apiController from "./controllers/api";
 import * as contactController from "./controllers/contact";
+import * as bookController from "./controllers/book";
+import * as authorController from "./controllers/author";
 
 
 // API keys and Passport configuration
@@ -106,6 +109,21 @@ app.post("/account/delete", passportConfig.isAuthenticated, userController.postD
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
 
 /**
+ * Book routes
+ */
+app.get("/book/:bookId", bookController.getBook);
+app.get("/book", bookController.index);
+app.post("/book", bookController.postBook);
+app.patch("/book/:bookId", bookController.patchBook);
+app.post("/book/delete/:bookId", bookController.deleteBook);
+
+/**
+ * Author routes
+ */
+app.post("/author", authorController.postAuthor);
+app.get("/author", authorController.index);
+
+/**
  * API examples routes.
  */
 app.get("/api", apiController.getApi);
@@ -118,5 +136,7 @@ app.get("/auth/facebook", passport.authenticate("facebook", { scope: ["email", "
 app.get("/auth/facebook/callback", passport.authenticate("facebook", { failureRedirect: "/login" }), (req, res) => {
   res.redirect(req.session.returnTo || "/");
 });
+
+seedDatabase();
 
 module.exports = app;

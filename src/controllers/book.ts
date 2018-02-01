@@ -45,9 +45,9 @@ export const getBook = (req: Request, res: Response) => {
     });
 };
 
-// Get a list of books
+// Get a list of books (and resolves the authorRef)
 export const index = (req: Request, res: Response) => {
-    Book.find({}, (err, books) => {
+    Book.find().populate("authorRef").exec((err, books) => {
         if (err) {
             res.status(404).send(err);
         } else if (books) {

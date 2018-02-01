@@ -8,6 +8,10 @@ let sampleBookId;
 let sampleAuthor;
 
 describe("Get /book", () => {
+    // workaround - database still being seeded
+    beforeEach(done => {
+        setTimeout(() => done(), 2000);
+    });
     it("should return 404 on non-existing book", (done) => {
         request(app)
             .get("/book/blabook")
@@ -18,13 +22,17 @@ describe("Get /book", () => {
                 done();
             });
     });
-    it("should be able to get a list of books", done => {
+    it("should be able to get a list of books with resolved authors", done => {
         request(app).get("/book")
             .end((err, res) => {
                 if (err) { return done(err); }
                 expect(res.body).to.be.ok;
                 expect(res.status).to.equal(200);
                 expect(res.body.length).to.be.above(0);
+                expect(res.body[0].authorRef).to.be.an("array");
+                expect(res.body[0].authorRef[0]).to.be.an("object");
+                expect(res.body[0].authorRef[0].name).to.be.oneOf(["Pavol Dobsinsky", "Hans Christian Andersen"]);
+                console.log("resolved author", res.body[0].authorRef[0]);
                 done();
             });
     });

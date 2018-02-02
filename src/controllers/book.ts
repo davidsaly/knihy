@@ -22,6 +22,7 @@ export const patchBook = (req: Request, res: Response) => {
             // update attributes
             _.set(book, "title", req.body.title || _.get(book, "title"));
             _.set(book, "description", req.body.description || _.get(book, "description"));
+            _.set(book, "authorRef", req.body.authorRef || _.get(book, "authorRef"));
             // save in db
             book.save((err, book) => {
                 if (err) {
@@ -47,7 +48,9 @@ export const getBook = (req: Request, res: Response) => {
 
 // Get a list of books (and resolves the authorRef)
 export const index = (req: Request, res: Response) => {
-    Book.find().populate("authorRef").exec((err, books) => {
+    const allowedQueryFields = ["title", "description"];
+    const query = _.pick(req.query, allowedQueryFields);
+    Book.find(query).populate("authorRef").exec((err, books) => {
         if (err) {
             res.status(404).send(err);
         } else if (books) {

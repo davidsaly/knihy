@@ -36,6 +36,17 @@ describe("Get /book", () => {
                 done();
             });
     });
+    it("should be able to query books", done => {
+        request(app).get("/book?title=Rozpravky")
+            .end((err, res) => {
+                if (err) { return done(err); }
+                expect(res.body).to.be.ok;
+                expect(res.status).to.equal(200);
+                expect(res.body.length).to.be.equal(1);
+                expect(res.body[0].title).to.equal("Rozpravky");
+                done();
+            });
+    });
 });
 describe("Post /book", () => {
     beforeEach(done => {
